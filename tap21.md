@@ -53,6 +53,22 @@ specified by the version.
 
 Pure ML-DSA MUST be used with an **empty context**.
 
+## TUF metadata parameters:
+
+* `keytype`: `ml-dsa`
+* `scheme`: (`ml-dsa-<parameter set>/<version>`)
+    * `ml-dsa-44/<version>`
+    * `ml-dsa-65/<version>`
+    * `ml-dsa-87/<version>`
+* `keyval.public`: PEM encoding of DER-encoded `SubjectPublicKeyInfo`
+  structures as defined for ML-DSA in RFC 9881
+* `signature.sig`: Hex-encoded signature byte string as per FIPS 204
+   §7.2
+
+> [!NOTE]
+> As of this publication only version 1 (`0x01`) is specified. Any
+> other version must be rejected during signing or verification.
+
 ## Rationale
 
 Why not use the `scheme` to specify the hash algorithm and instead use
@@ -66,7 +82,9 @@ for possible confusion.
 Why not use HashML-DSA? With Ed25519 the ecosystem support has been
 much better for the pure version, and it's likely it will be the same
 for ML-DSA. Based on this an application specific protocol is better
-suited for wider adoption.
+suited for wider adoption. Pre-hash algorithms are really not needed
+either, and they can add more complexity, see [HashML-DSA considered
+harmful](https://keymaterial.net/2024/11/05/hashml-dsa-considered-harmful/).
 
 ## Protocol versions
 
@@ -81,9 +99,9 @@ information into the `scheme` parameter.
 * Version byte: `0x01`
 * Hash algorithm: SHA-512
 * Implementations MUST support
-    * `ML-DSA-44`
-    * `ML-DSA-65`
-    * `ML-DSA-87`
+    * `ML-DSA-44` (`scheme: ml-dsa-44/1`)
+    * `ML-DSA-65` (`scheme: ml-dsa-65/1`)
+    * `ML-DSA-87` (`scheme: ml-dsa-87/1`)
 * Metadata canonicalization scheme: encoded as "canonical JSON" as described
   in the [TUF
   Specification](https://theupdateframework.github.io/specification/v1.0.34/index.html#metaformat).
@@ -107,7 +125,9 @@ information into the `scheme` parameter.
 3. Parse `scheme` into parameter set and version
     * Reject if the protocol version is not supported
     * Implementations MUST NOT infer or select an ML-DSA
-      parameter set or version from the signature bytes alone
+      parameter set or version from the signature bytes alone --
+      underlying crypto implementations should reject mismatched
+      signature/public key combinations
 4. Verifier must reconstruct the exact signed bytes itself
     * It should not accept a caller-supplied digest/prefix blindly
     * The `version` MUST be taken from the trusted TUF metadata's
@@ -120,18 +140,6 @@ information into the `scheme` parameter.
     * Do not fall back
     * Do not try multiple interpretations
     * Do not accept the same signature under HashML-DSA or another scheme
-
-## TUF metadata parameters:
-
-* `keytype`: `ml-dsa`
-* `scheme`: (`ml-dsa-<parameter set>/<version>`)
-    * `ml-dsa-44/1`
-    * `ml-dsa-65/1`
-    * `ml-dsa-87/1`
-* `keyval.public`: PEM encoding of DER-encoded `SubjectPublicKeyInfo`
-  structures as defined for ML-DSA in RFC 9881
-* `signature.sig`: Hex-encoded signature byte string as per FIPS 204
-   §7.2
 
 # Security considerations
 
@@ -146,14 +154,6 @@ information into the `scheme` parameter.
    version bytes are _very_ unlikely)
 
 # Appendix
-
-## ML-DSA parameter sets
-
-This is an excerpt only, see FIPS-204 §4 for a complete parameter set.
-
-| Parameter | ML-DSA-44 | ML-DSA-65 | ML-DSA-87 |
-|-----------|-----------|-----------|-----------|
-| 𝜆         | 128       | 192       | 256       |
 
 ## Notes on application level hashing
 
