@@ -56,7 +56,8 @@ Pure ML-DSA MUST be used with an **empty context**.
 ## TUF metadata parameters:
 
 * `keytype`: `ml-dsa`
-* `scheme`: (`ml-dsa-<parameter set>/<version>`)
+* `scheme`: (`ml-dsa-<parameter set>/<version>` where version is
+  encoded as a decimal number without leading zeros)
     * `ml-dsa-44/<version>`
     * `ml-dsa-65/<version>`
     * `ml-dsa-87/<version>`
