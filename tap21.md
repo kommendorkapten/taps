@@ -87,6 +87,14 @@ suited for wider adoption. Pre-hash algorithms are really not needed
 either, and they can add more complexity, see [HashML-DSA considered
 harmful](https://keymaterial.net/2024/11/05/hashml-dsa-considered-harmful/).
 
+Certain implementations expose an API where μ is exposed directly to
+the sign interface like [OpenSSL
+4.0](https://openssl-library.org/post/2026-04-14-openssl-40-final-release/),
+however APIs like this are not guaranteed to be available for every
+ecosystem, nor can we trust that each cryptographic provider
+separates the μ computation to a different cryptographic module to
+avoid large payloads to be transmitted to the signing device.
+
 ## Protocol versions
 
 To allow for future updates on hash algorithm selection to mitigate
