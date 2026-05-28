@@ -167,15 +167,17 @@ information into the `scheme` parameter.
 ## Metadata size analysis
 
 > [!NOTE]
-> All sizes are as TUF enodes them (hex or single line PEM encoding).
-> Key sizes can differ a few bytes between keys, and also if the last
-> `\n` is present or not in the JSON encoding of PEM encoded keys.
-> Metadata sizes can also differs a bit due to whitespaces being
-> stripped or not, take them a guide on the growth.
+> All sizes are as TUF enodes them (hex for signatures and single line
+> PEM encoding for public keys).
+> Key sizes can differ a few bytes between keys for some key types,
+> and also if the last `\n` is present or not in the JSON encoding of
+> PEM encoded keys.
+> Also metadata sizes can differs a bit due to whitespaces being
+> stripped or not, take them a indicator on the growth.
 
-Example For a repository that relies on five shared root/targets keys
-and a shared key for snapshot and timestamp. Only the public key and
-signatures are accounted for in the size table.
+Looking at an example repository that relies on five shared
+root/targets keys and a shared key for snapshot and timestamp. Only
+the public key and signatures are accounted for in the size table.
 
 | Role      | Keys | Sigs | ECDSA       | ML-DSA-44     | ML-DSA-65     | ML-DSA-87     |
 |-----------|------|------|-------------|---------------|---------------|---------------|
