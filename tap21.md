@@ -164,6 +164,51 @@ information into the `scheme` parameter.
 
 # Appendix
 
+## Metadata size analysis
+
+> [!NOTE]
+> All sizes are as TUF enodes them (hex or single line PEM encoding).
+> Key sizes can differ a few bytes between keys, and also if the last
+> `\n` is present or not in the JSON encoding of PEM encoded keys.
+> Metadata sizes can also differs a bit due to whitespaces being
+> stripped or not, take them a guide on the growth.
+
+Example For a repository that relies on five shared root/targets keys
+and a shared key for snapshot and timestamp. Only the public key and
+signatures are accounted for in the size table.
+
+| Role      | Keys | Sigs | ECDSA       | ML-DSA-44     | ML-DSA-65     | ML-DSA-87     |
+|-----------|------|------|-------------|---------------|---------------|---------------|
+| root      | 6    | 5    | 1812 (1.0x) | 35540 (19.6x) | 49710 (27.4x) | 68172 (37.6x) |
+| targets   | 0    | 5    | 720         | 24300 (33.6x) | 33090 (46.0x) | 46260 (64.3x) |
+| snapshot  | 0    | 1    | 144         | 4840 (33.6x)  | 6618 (46.0x)  | 9254 (64.3x)  |
+| timestamp | 0    | 1    | 144         | 4840 (33.6x)  | 6618 (46.0x)  | 9254 (64.3x)  |
+
+Or looking at it for a single key:
+
+| Type      | Public key bytes | Signature bytes |
+|-----------|------------------|-----------------|
+| ECDSA     | 182 (1.0x)       | 144 (1.0x)      |
+| ML-DSA-44 | 1890 (10.4x)     | 4840 (33.6x)    |
+| ML-DSA-65 | 2770 (15.2x)     | 6618 (46.0x)    |
+| ML-DSA-87 | 3652 (20.1x)     | 9254 (64.3x)    |
+
+The above tables only include the raw key and signature byte sizes,
+the real world effect on a repository can so differ, in particular the
+targets file. Looking at an [example
+repository](https://github.com/sigstore/root-signing/tree/main/metadata)
+we can get a better feel:
+
+| File      | Naked | ECDSA       | ML-DSA-44      | ML-DSA-65      | ML-DSA-87      |
+|-----------|-------|-------------|----------------|----------------|----------------|
+| root      | 3829  | 5641 (1.0x) | 39369 (7.0x)   | 53539 (9.5x)   | 72001 (12.8x)  |
+| targets   | 3418  | 4138 (1.0x) | 27718 (6.7x)   | 36508 (8.8x)   | 49678 (12.0x)  |
+| snapshot  | 1619  | 1763 (1.0x) | 6459 (3.7x)    | 8237 (4.7x)    | 10873 (6.2x)   |
+| timestamp | 308   | 452 (1.0x)  | 5148 (11.4x)   | 6926 (15.3x)   | 9562 (21.2x)   |
+
+Note that the example repo linked above includes one delegation, which was
+removed for this example computation to keep it simpler.
+
 ## Notes on application level hashing
 
 From FIPS 204 on application level hashing (§5.4):
